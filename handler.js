@@ -1,3 +1,4 @@
+'use strict'
 const jsdom = require('jsdom')
 const axios = require('axios')
 const mongoose = require('mongoose')
@@ -5,39 +6,61 @@ const mongoose = require('mongoose')
 const { JSDOM } = jsdom
 
 module.exports.api = async event => {
-  let response = { statusCode: 200, body: 'default' }
+  let response = { 
+    statusCode: 200, 
+    body: 'default',
+    headers: {
+      "Access-Control-Allow-Headers": "*",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "*"
+    },
+  }
   try {
-    console.log(event)
-    console.log(event.pathParameters)
-    if (event.pathParameters) {
-      console.log(event.pathParameters.id)
-    }
-    let path = 'get-build'
+    const path = event.pathParameters?.id
     if (path === 'trending-github') {
-      response.body = 'ok then 1'
+      if (!process.env.GIT_TOKEN) throw 'undefined GIT_TOKEN env var'
+      response.body = await githubTrends()
+      // console.log('got data here')
     } else if (path === 'upcoming-movies') {
-      response.body = 'ok then 2'
+      response.body = await getUpComingMovies()
     } else if (path === 'trending-movies') {
-      response.body = 'ok then 3'
+      response.body = await getTrendingMovie()
     } else if (path === 'trending-tv') {
-      response.body = 'ok then 4'
+      response.body = await getTrendingTV()
     } else if (path === 'upcoming-games') {
-      response.body = 'ok then 5'
+      response.body = await upcomingGames()
     } else if (path === 'trending-npm-1') {
-      response.body = 'ok then 6'
+      response.body = await getNpmTrend()
     } else if (path === 'trending-npm-2') {
-      response.body = 'ok then 7'
+      response.body = await getNpmTrendAlt()
     } else if (path === 'get-build') {
-      response.body = 'ok then 8'
+      response.body = { data: process.env.BUILD_ID, skipDB: true }
     } else {
-      console.log('IN ELSE')
+      throw `BUILD: ${process.env.BUILD_ID} |
+Use one of the following api paths:
+/trending-github
+/upcoming-movies
+/trending-movies
+/trending-tv
+/upcoming-games
+/trending-npm-1
+/trending-npm-2`
     }
+
+    if (response.body && !response.body.skipDB) {
+      console.log('save to db')
+      await saveData(path, response.body)
+    }
+
+    response.body = JSON.stringify('wowee', null, 2)
   } catch (err) {
     console.log(err)
-    response = { statusCode: 500, body: 'an error' }
-  } finally {
-    return response
-  }
+    if (typeof err === 'string') {
+      response = { statusCode: 400, body: err.split('\n').join(' ') }
+    } else {
+      response = { statusCode: 500, body: (err.message || err)}
+    }
+  } finally { return response }
 }
 
 async function saveData(collection, data) {
