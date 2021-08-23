@@ -7,7 +7,8 @@ const { JSDOM } = jsdom
 module.exports.api = async event => {
   let response = { statusCode: 200, body: 'default' }
   try {
-    const path = 'get-build'
+    const path = event.pathParameters?.id
+    console.log(path)
     if (path === 'trending-github') {
       response.body = 'ok then 1'
       // console.log('got data here')
