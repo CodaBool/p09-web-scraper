@@ -34,7 +34,7 @@ module.exports.api = async event => {
     } else if (path === 'trending-npm-2') {
       response.body = await getNpmTrendAlt()
     } else if (path === 'get-build') {
-      response.body = { data: process.env.BUILD_ID, skipDB: true }
+      response.body = { skipDB: true }
     } else {
       throw `BUILD: ${process.env.BUILD_ID} |
 Use one of the following api paths:
@@ -46,9 +46,11 @@ Use one of the following api paths:
 /trending-npm-1
 /trending-npm-2`
     }
+    
     if (response.body && !response.body.skipDB) {
       console.log('save to db')
       await saveData(path, response.body)
+      response.body = process.env.BUILD_ID
     }
   } catch (err) {
     console.log(err)

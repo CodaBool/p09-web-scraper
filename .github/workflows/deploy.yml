@@ -32,6 +32,7 @@ jobs:
           npx serverless config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           npx serverless deploy --verbose --conceal --stage ${{ steps.extract.outputs.stage }}
         env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
           GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
           BUILD_ID: ${{ steps.extract.outputs.build }}
           STAGE: ${{ steps.extract.outputs.stage }}
