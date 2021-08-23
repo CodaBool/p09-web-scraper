@@ -56,6 +56,28 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           header: "Lambda which scrapes for data that I like to look at"
-          subhead: "Available Endpoints\n\n- /trending-github\n- /upcoming-movies\n- /trending-movies\n- /trending-tv\n- /upcoming-games\n- /trending-npm-1\n- /trending-npm-2\n# Setup\ncreate a local-data.json with the following data\n\`\`\`json\n{\n  \"pathParameters\": {\n    \"id\": \"trending-tv\"\n  }\n}\n\`\`\`\nthis will allow the different scraping endpoints to be hit.\nUsing `sls invoke local -f api -p local-data.json\`"
+          subhead: `Available Endpoints
+- /trending-github
+- /upcoming-movies
+- /trending-movies
+- /trending-tv
+- /upcoming-games
+- /trending-npm-1
+- /trending-npm-2
+
+# Setup
+create a local-data.json with the following data
+
+```json
+{
+  "pathParameters": {
+    "id": "trending-tv"
+  }
+}
+```
+this will allow the different scraping endpoints to be hit.
+
+Using `sls invoke local -f api -p local-data.json`
+`
           footer: "${{ steps.stack.outputs.endpoint }}/api/REPLACE_THIS_PATH"
           repoCount: 0
