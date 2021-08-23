@@ -13,19 +13,12 @@ module.exports.api = async event => {
       "Access-Control-Allow-Headers": "*",
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "*"
-    },
+    }
   }
   try {
-    if (!event.pathParameters.id) throw `BUILD: ${process.env.BUILD_ID} |
-Use one of the following api paths:
-/trending-github
-/upcoming-movies
-/trending-movies
-/trending-tv
-/upcoming-games
-/trending-npm-1
-/trending-npm-2`
-    const path = event.pathParameters.id
+    // if (!event.pathParameters.id) throw `BUILD: ${process.env.BUILD_ID}`
+    // const path = event.pathParameters.id
+    const path = 'get-build' 
     if (path === 'trending-github') {
       if (!process.env.GIT_TOKEN) throw 'undefined GIT_TOKEN env var'
       response.body = await githubTrends()
@@ -45,23 +38,15 @@ Use one of the following api paths:
     } else if (path === 'get-build') {
       response.body = { data: process.env.BUILD_ID, skipDB: true }
     } else {
-      throw `BUILD: ${process.env.BUILD_ID} |
-Use one of the following api paths:
-/trending-github
-/upcoming-movies
-/trending-movies
-/trending-tv
-/upcoming-games
-/trending-npm-1
-/trending-npm-2`
+      throw `BUILD: ${process.env.BUILD_ID}`
     }
 
     if (response.body && !response.body.skipDB) {
       console.log('save to db')
-      await saveData(path, response.body)
+      // await saveData(path, response.body)
     }
 
-    response.body = JSON.stringify('wowee', null, 2)
+    // response.body = JSON.stringify('wowee', null, 2)
   } catch (err) {
     console.log(err)
     if (typeof err === 'string') {
