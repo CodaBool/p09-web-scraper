@@ -1,13 +1,48 @@
-// const jsdom = require('jsdom')
-// const axios = require('axios')
-// const mongoose = require('mongoose')
+const jsdom = require('jsdom')
+const axios = require('axios')
+const mongoose = require('mongoose')
 
-// const { JSDOM } = jsdom
+const { JSDOM } = jsdom
 
 module.exports.api = async event => {
   let response = { statusCode: 200, body: 'default' }
   try {
-    console.log('event', event)
+    const path = event.pathParameters?.id
+    if (path === 'trending-github') {
+      response.body = 'ok then 1'
+      // console.log('got data here')
+    } else if (path === 'upcoming-movies') {
+      response.body = 'ok then 2'
+    } else if (path === 'trending-movies') {
+      response.body = 'ok then 3'
+    } else if (path === 'trending-tv') {
+      response.body = 'ok then 4'
+    } else if (path === 'upcoming-games') {
+      response.body = 'ok then 5'
+    } else if (path === 'trending-npm-1') {
+      response.body = 'ok then 6'
+    } else if (path === 'trending-npm-2') {
+      response.body = 'ok then 7'
+    } else if (path === 'get-build') {
+      response.body = 'ok then 8'
+    } else {
+      throw `BUILD: ${process.env.BUILD_ID} |
+Use one of the following api paths:
+/trending-github
+/upcoming-movies
+/trending-movies
+/trending-tv
+/upcoming-games
+/trending-npm-1
+/trending-npm-2`
+    }
+
+    if (response.body && !response.body.skipDB) {
+      console.log('save to db')
+      // await saveData(path, response.body)
+    }
+
+    response.body = 'wowee end'
   } catch (err) {
     console.log(err)
     response = { statusCode: 500, body: 'an error' }
