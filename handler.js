@@ -1,4 +1,3 @@
-'use strict';
 // const jsdom = require('jsdom')
 // const axios = require('axios')
 // const mongoose = require('mongoose')
@@ -8,35 +7,7 @@
 module.exports.api = async event => {
   let response = { statusCode: 200, body: 'default' }
   try {
-    const path = event.pathParameters?.id
-    if (path === 'trending-github') {
-      if (!process.env.GIT_TOKEN) throw 'undefined GIT_TOKEN env var'
-      response.body = 'wowee'
-      // console.log('got data here')
-    } else if (path === 'upcoming-movies') {
-      response.body = 'wowee'
-    } else if (path === 'trending-movies') {
-      response.body = 'wowee'
-    } else if (path === 'trending-tv') {
-      response.body = 'wowee'
-    } else if (path === 'upcoming-games') {
-      response.body = 'wowee'
-    } else if (path === 'trending-npm-1') {
-      response.body = 'wowee'
-    } else if (path === 'trending-npm-2') {
-      response.body = 'wowee'
-    } else if (path === 'get-build') {
-      response.body = process.env.BUILD_ID || 'no id'
-    } else {
-      throw `BUILD: ${process.env.BUILD_ID}`
-    }
-
-    if (response.body && !response.body.skipDB) {
-      console.log('save to db')
-      // await saveData(path, response.body)
-    }
-
-    response.body = 'wowee final'
+    console.log('event', event)
   } catch (err) {
     console.log(err)
     response = { statusCode: 500, body: 'an error' }
