@@ -46,13 +46,10 @@ Use one of the following api paths:
 /trending-npm-1
 /trending-npm-2`
     }
-
     if (response.body && !response.body.skipDB) {
       console.log('save to db')
       await saveData(path, response.body)
     }
-
-    response.body = JSON.stringify('wowee', null, 2)
   } catch (err) {
     console.log(err)
     if (typeof err === 'string') {
