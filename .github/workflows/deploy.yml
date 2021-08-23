@@ -1,0 +1,61 @@
+name: deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    if: "! contains(github.event.commits[0].message, '[no ci]')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Extract Pipline Vars
+        run: |
+          repo=${GITHUB_REPOSITORY#CodaBool/}
+          echo "##[set-output name=repo;]${repo,,}" 
+          echo "##[set-output name=stage;]${GITHUB_REF#refs/heads/}"
+          build=$(echo "${SHA:0:7}.${RUN_NUMBER}"|tr -d '"') # removes an annoying double quote
+          echo "##[set-output name=build;]${build}"
+        id: extract # allows use of ${{ steps.extract.outputs.stage }} for pipeline stage/repo
+        env:
+          SHA: ${{ toJSON(github.sha) }}
+          RUN_NUMBER: ${{ toJSON(github.run_number) }}
+
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '14'
+
+      - name: Install dependencies 
+        run:  npm ci
+
+      - name: serverless deploy
+        run: |
+          npx serverless config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          npx serverless deploy --verbose --conceal --stage ${{ steps.extract.outputs.stage }}
+        env:
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+          BUILD_ID: ${{ steps.extract.outputs.build }}
+          STAGE: ${{ steps.extract.outputs.stage }}
+          REPO: ${{ steps.extract.outputs.repo }}
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+        
+      - name: Get Stack Endpoint
+        id: stack
+        run: |
+          endpoint=$(aws cloudformation describe-stacks --stack-name lambda-scraper-dev --query "Stacks[0].Outputs[?OutputKey=='ServiceEndpoint'].OutputValue" --output text)
+          echo "##[set-output name=endpoint;]${endpoint}"
+      
+      - name: Update GitHub Profile README
+        uses: theboi/github-update-readme@v1.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          header: "Lambda which scrapes for data that I like to look at"
+          subhead: "Available Endpoints\n\n- /trending-github\n- /upcoming-movies\n- /trending-movies\n- /trending-tv\n- /upcoming-games\n- /trending-npm-1\n- /trending-npm-2\n# Setup\ncreate a local-data.json with the following data\n```json\n{\n  \"pathParameters\": {\n    \"id\": \"trending-tv\"\n  }\n}\n```\nthis will allow the different scraping endpoints to be hit.\nUsing \`sls invoke local -f api -p local-data.json\`"
+          footer: "${{ steps.stack.outputs.endpoint }}/api/REPLACE_THIS_PATH"
+          repoCount: 0

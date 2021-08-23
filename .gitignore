@@ -1,0 +1,14 @@
+.serverless_nextjs/
+.serverless/
+.next/
+.webpack/
+.env.local
+.vercel
+.env
+
+node_modules/
+build/
+out/
+
+junk.*
+local-*

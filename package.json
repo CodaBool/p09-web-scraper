@@ -1,0 +1,17 @@
+{
+  "name": "p09-web-scraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "start": "echo 'This script should be ran with sls invoke local, read more in the README.md'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "jsdom": "^16.6.0",
+    "mongoose": "^5.13.4"
+  }
+}
