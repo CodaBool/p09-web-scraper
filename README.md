@@ -1,4 +1,7 @@
-# Endpoints
+## Lambda which scrapes for data that I like to look at
+
+Available Endpoints
+
 - /trending-github
 - /upcoming-movies
 - /trending-movies
@@ -6,20 +9,11 @@
 - /upcoming-games
 - /trending-npm-1
 - /trending-npm-2
-- /get-build
 
-# Setup
-create a local-data.json with the following data
-
-```json
-{
-  "pathParameters": {
-    "id": "trending-tv"
-  }
-}
-```
-this will allow the different scraping endpoints to be hit.
+---
 
 
-# Command
-sls invoke local -f api -p local-data.json
+
+---
+
+https://t7gkswyvm1.execute-api.us-east-1.amazonaws.com/dev/api/REPLACE_THIS_PATH
