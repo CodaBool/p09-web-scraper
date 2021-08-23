@@ -9,10 +9,10 @@ module.exports.api = async event => {
   let response = { 
     statusCode: 200, 
     body: 'default',
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "OPTIONS,GET"
-    }
+    // headers: {
+    //   "Access-Control-Allow-Origin": "*",
+    //   "Access-Control-Allow-Methods": "OPTIONS,GET"
+    // }
   }
   try {
     const path = event.pathParameters?.id

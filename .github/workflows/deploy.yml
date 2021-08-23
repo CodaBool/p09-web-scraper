@@ -47,7 +47,7 @@ jobs:
       - name: Get Stack Endpoint
         id: stack
         run: |
-          endpoint=$(aws cloudformation describe-stacks --stack-name lambda-scraper-dev --query "Stacks[0].Outputs[?OutputKey=='ServiceEndpoint'].OutputValue" --output text)
+          endpoint=$(aws cloudformation describe-stacks --stack-name lambda-scraper-main --query "Stacks[0].Outputs[?OutputKey=='ServiceEndpoint'].OutputValue" --output text)
           echo "##[set-output name=endpoint;]${endpoint}"
       
       - name: Update GitHub Profile README
