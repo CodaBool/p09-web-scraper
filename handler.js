@@ -6,10 +6,7 @@
 // const { JSDOM } = jsdom
 
 module.exports.api = async event => {
-  let response = { 
-    statusCode: 200, 
-    body: 'default'
-  }
+  let response = { statusCode: 200, body: 'default' }
   try {
     const path = event.pathParameters?.id
     if (path === 'trending-github') {
@@ -42,12 +39,10 @@ module.exports.api = async event => {
     response.body = 'wowee final'
   } catch (err) {
     console.log(err)
-    if (typeof err === 'string') {
-      response = { statusCode: 400, body: err }
-    } else {
-      response = { statusCode: 500, body: (err.message || err)}
-    }
-  } finally { return response }
+    response = { statusCode: 500, body: 'an error' }
+  } finally {
+    return response
+  }
 }
 
 // async function saveData(collection, data) {
