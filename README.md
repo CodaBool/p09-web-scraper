@@ -16,4 +16,4 @@ Available Endpoints
 
 ---
 
-https://t7gkswyvm1.execute-api.us-east-1.amazonaws.com/dev/api/REPLACE_THIS_PATH
+https://j8xl9nv9k9.execute-api.us-east-1.amazonaws.com/main/api/REPLACE_THIS_PATH
