@@ -37,6 +37,7 @@ jobs:
           BUILD_ID: ${{ steps.extract.outputs.build }}
           STAGE: ${{ steps.extract.outputs.stage }}
           REPO: ${{ steps.extract.outputs.repo }}
+          KEY: ${{ secrets.KEY }}
       
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1

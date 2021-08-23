@@ -19,5 +19,6 @@ functions:
       BUILD_ID: ${env:BUILD_ID}
       STAGE: ${env:STAGE}
       MONGODB_URI: ${env:MONGODB_URI}
+      KEY: ${env:KEY}
     events:
       - http: any /api/{id}
