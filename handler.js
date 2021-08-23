@@ -1,9 +1,4 @@
 'use strict'
-const jsdom = require('jsdom')
-const axios = require('axios')
-const mongoose = require('mongoose')
-
-const { JSDOM } = jsdom
 
 module.exports.api = async event => {
   let response = { 
@@ -11,47 +6,11 @@ module.exports.api = async event => {
     body: 'default'
   }
   try {
-    const path = event.pathParameters?.id
-    if (path === 'trending-github') {
-      if (!process.env.GIT_TOKEN) throw 'undefined GIT_TOKEN env var'
-      response.body = 'wowee'
-      // console.log('got data here')
-    } else if (path === 'upcoming-movies') {
-      response.body = 'wowee'
-    } else if (path === 'trending-movies') {
-      response.body = 'wowee'
-    } else if (path === 'trending-tv') {
-      response.body = 'wowee'
-    } else if (path === 'upcoming-games') {
-      response.body = 'wowee'
-    } else if (path === 'trending-npm-1') {
-      response.body = 'wowee'
-    } else if (path === 'trending-npm-2') {
-      response.body = 'wowee'
-    } else if (path === 'get-build') {
-      response.body = { data: process.env.BUILD_ID, skipDB: true }
-    } else {
-      throw `BUILD: ${process.env.BUILD_ID} |
-Use one of the following api paths:
-/trending-github
-/upcoming-movies
-/trending-movies
-/trending-tv
-/upcoming-games
-/trending-npm-1
-/trending-npm-2`
-    }
-
-    if (response.body && !response.body.skipDB) {
-      console.log('save to db')
-      // await saveData(path, response.body)
-    }
-
     response.body = JSON.stringify('wowee', null, 2)
   } catch (err) {
     console.log(err)
     if (typeof err === 'string') {
-      response = { statusCode: 400, body: err.split('\n').join(' ') }
+      response = { statusCode: 400, body: err }
     } else {
       response = { statusCode: 500, body: (err.message || err)}
     }
