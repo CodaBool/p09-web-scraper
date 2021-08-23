@@ -17,7 +17,8 @@ module.exports.api = async event => {
   }
   try {
     const path = event.pathParameters?.id
-    const creationKey = event.pathParameters?.key
+    const creationKey = event.queryStringParameters?.key
+    console.log('key', creationKey)
     if (creationKey) { // write
       if (creationKey !== process.env.KEY) throw 'Wrong key'
 
