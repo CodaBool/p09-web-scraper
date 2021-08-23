@@ -1,4 +1,3 @@
-'use strict';
 const jsdom = require('jsdom')
 const axios = require('axios')
 const mongoose = require('mongoose')
@@ -6,44 +5,47 @@ const mongoose = require('mongoose')
 const { JSDOM } = jsdom
 
 module.exports.api = async event => {
-  let response = { statusCode: 200, body: 'default', headers: { "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "*" } }
+  let response = { 
+    statusCode: 200, 
+    body: 'default',
+    headers: {
+      "Access-Control-Allow-Headers": "*",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "*"
+    }
+  }
   try {
-    // if (!event.pathParameters.id) throw `BUILD: ${process.env.BUILD_ID}`
-    // const path = event.pathParameters.id
-    const path = 'get-build' 
+    console.log(event)
+    console.log(event.pathParameters)
+    if (event.pathParameters) {
+      console.log(event.pathParameters.id)
+    }
+    let path = 'get-build'
     if (path === 'trending-github') {
-      if (!process.env.GIT_TOKEN) throw 'undefined GIT_TOKEN env var'
-      response.body = await githubTrends()
-      // console.log('got data here')
+      response.body = 'ok then 1'
     } else if (path === 'upcoming-movies') {
-      response.body = await getUpComingMovies()
+      response.body = 'ok then 2'
     } else if (path === 'trending-movies') {
-      response.body = await getTrendingMovie()
+      response.body = 'ok then 3'
     } else if (path === 'trending-tv') {
-      response.body = await getTrendingTV()
+      response.body = 'ok then 4'
     } else if (path === 'upcoming-games') {
-      response.body = await upcomingGames()
+      response.body = 'ok then 5'
     } else if (path === 'trending-npm-1') {
-      response.body = await getNpmTrend()
+      response.body = 'ok then 6'
     } else if (path === 'trending-npm-2') {
-      response.body = await getNpmTrendAlt()
+      response.body = 'ok then 7'
     } else if (path === 'get-build') {
-      response.body = 'build 123'
-      // response.body = { data: process.env.BUILD_ID, skipDB: true }
+      response.body = 'ok then 8'
     } else {
-      throw `BUILD: ${process.env.BUILD_ID}`
+      console.log('IN ELSE')
     }
-
-    if (response.body && !response.body.skipDB) {
-      console.log('save to db')
-      // await saveData(path, response.body)
-    }
-
-    // response.body = JSON.stringify('wowee', null, 2)
   } catch (err) {
     console.log(err)
-    response = { statusCode: 500, body: (err.message || err)}
-  } finally { return response }
+    response = { statusCode: 500, body: 'an error' }
+  } finally {
+    return response
+  }
 }
 
 async function saveData(collection, data) {
