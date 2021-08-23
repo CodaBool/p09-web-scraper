@@ -12,7 +12,7 @@ module.exports.api = async event => {
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "OPTIONS,GET"
-    },
+    }
   }
   try {
     const path = event.pathParameters?.id
