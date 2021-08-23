@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 // const jsdom = require('jsdom')
 // const axios = require('axios')
 // const mongoose = require('mongoose')
@@ -29,17 +29,9 @@ module.exports.api = async event => {
     } else if (path === 'trending-npm-2') {
       response.body = 'wowee'
     } else if (path === 'get-build') {
-      response.body = { data: process.env.BUILD_ID, skipDB: true }
+      response.body = process.env.BUILD_ID || 'no id'
     } else {
-      throw `BUILD: ${process.env.BUILD_ID} |
-Use one of the following api paths:
-/trending-github
-/upcoming-movies
-/trending-movies
-/trending-tv
-/upcoming-games
-/trending-npm-1
-/trending-npm-2`
+      throw `BUILD: ${process.env.BUILD_ID}`
     }
 
     if (response.body && !response.body.skipDB) {
@@ -47,11 +39,11 @@ Use one of the following api paths:
       // await saveData(path, response.body)
     }
 
-    response.body = JSON.stringify('wowee', null, 2)
+    response.body = 'wowee final'
   } catch (err) {
     console.log(err)
     if (typeof err === 'string') {
-      response = { statusCode: 400, body: err.split('\n').join(' ') }
+      response = { statusCode: 400, body: err }
     } else {
       response = { statusCode: 500, body: (err.message || err)}
     }
