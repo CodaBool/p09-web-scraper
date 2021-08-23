@@ -6,15 +6,7 @@ const mongoose = require('mongoose')
 const { JSDOM } = jsdom
 
 module.exports.api = async event => {
-  let response = { 
-    statusCode: 200, 
-    body: 'default',
-    headers: {
-      "Access-Control-Allow-Headers": "*",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "*"
-    }
-  }
+  let response = { statusCode: 200, body: 'default', headers: { "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "*" } }
   try {
     // if (!event.pathParameters.id) throw `BUILD: ${process.env.BUILD_ID}`
     // const path = event.pathParameters.id
@@ -36,7 +28,8 @@ module.exports.api = async event => {
     } else if (path === 'trending-npm-2') {
       response.body = await getNpmTrendAlt()
     } else if (path === 'get-build') {
-      response.body = { data: process.env.BUILD_ID, skipDB: true }
+      response.body = 'build 123'
+      // response.body = { data: process.env.BUILD_ID, skipDB: true }
     } else {
       throw `BUILD: ${process.env.BUILD_ID}`
     }
@@ -49,11 +42,7 @@ module.exports.api = async event => {
     // response.body = JSON.stringify('wowee', null, 2)
   } catch (err) {
     console.log(err)
-    if (typeof err === 'string') {
-      response = { statusCode: 400, body: err.split('\n').join(' ') }
-    } else {
-      response = { statusCode: 500, body: (err.message || err)}
-    }
+    response = { statusCode: 500, body: (err.message || err)}
   } finally { return response }
 }
 
