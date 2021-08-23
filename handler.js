@@ -17,39 +17,46 @@ module.exports.api = async event => {
   }
   try {
     const path = event.pathParameters?.id
-    if (path === 'trending-github') {
-      if (!process.env.GIT_TOKEN) throw 'undefined GIT_TOKEN env var'
-      response.body = await githubTrends()
-      // console.log('got data here')
-    } else if (path === 'upcoming-movies') {
-      response.body = await getUpComingMovies()
-    } else if (path === 'trending-movies') {
-      response.body = await getTrendingMovie()
-    } else if (path === 'trending-tv') {
-      response.body = await getTrendingTV()
-    } else if (path === 'upcoming-games') {
-      response.body = await upcomingGames()
-    } else if (path === 'trending-npm-1') {
-      response.body = await getNpmTrend()
-    } else if (path === 'trending-npm-2') {
-      response.body = await getNpmTrendAlt()
-    } else if (path === 'get-build') {
-      response.body = process.env.BUILD_ID
-    } else {
-      throw `BUILD: ${process.env.BUILD_ID} |
-Use one of the following api paths:
-/trending-github
-/upcoming-movies
-/trending-movies
-/trending-tv
-/upcoming-games
-/trending-npm-1
-/trending-npm-2`
-    }
+    const creationKey = event.pathParameters?.key
+    if (creationKey) { // write
+      if (creationKey !== process.env.KEY) throw 'Wrong key'
 
-    if (response.body && (path !== 'get-build')) {
-      console.log('save to db')
-      await saveData(path, response.body)
+      if (path === 'trending-github') {
+        if (!process.env.GIT_TOKEN) throw 'undefined GIT_TOKEN env var'
+        response.body = await githubTrends()
+        // console.log('got data here')
+      } else if (path === 'upcoming-movies') {
+        response.body = await getUpComingMovies()
+      } else if (path === 'trending-movies') {
+        response.body = await getTrendingMovie()
+      } else if (path === 'trending-tv') {
+        response.body = await getTrendingTV()
+      } else if (path === 'upcoming-games') {
+        response.body = await upcomingGames()
+      } else if (path === 'trending-npm-1') {
+        response.body = await getNpmTrend()
+      } else if (path === 'trending-npm-2') {
+        response.body = await getNpmTrendAlt()
+      } else if (path === 'get-build') {
+        response.body = process.env.BUILD_ID
+      } else {
+        throw `BUILD: ${process.env.BUILD_ID} |
+  Use one of the following api paths:
+  /trending-github
+  /upcoming-movies
+  /trending-movies
+  /trending-tv
+  /upcoming-games
+  /trending-npm-1
+  /trending-npm-2`
+      }
+  
+      if (response.body && (path !== 'get-build')) {
+        console.log('save to db')
+        await saveData(path, response.body)
+      }
+    } else { // read
+      response.body = await getCollection(path)
     }
     response.body = JSON.stringify(response.body, null, 2)
   } catch (err) {
@@ -60,6 +67,33 @@ Use one of the following api paths:
       response = { statusCode: 500, body: (err.message || err)}
     }
   } finally { return response }
+}
+
+async function getCollection(path) {
+  if (!path) throw `BUILD: ${process.env.BUILD_ID} |
+Use one of the following api paths:
+/trending-github
+/upcoming-movies
+/trending-movies
+/trending-tv
+/upcoming-games
+/trending-npm-1
+/trending-npm-2`
+  const connection = await mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true
+  })
+  try {
+    const quickSchema = new mongoose.Schema({}, { strict: false, timestamps: true, collection: path })
+    const Model = mongoose.model(path, quickSchema)
+    return await Model.findOne({}, {}, { sort: { createdAt: -1 } }) // newest document, returns null if none
+  } catch (error) {
+    console.log(error)
+  } finally {
+    connection?.disconnect()
+  }
 }
 
 async function saveData(collection, data) {
