@@ -7,7 +7,7 @@ const { JSDOM } = jsdom
 module.exports.api = async event => {
   let response = { statusCode: 200, body: 'default' }
   try {
-    const path = event.pathParameters?.id
+    const path = 'get-build'
     if (path === 'trending-github') {
       response.body = 'ok then 1'
       // console.log('got data here')
@@ -26,20 +26,7 @@ module.exports.api = async event => {
     } else if (path === 'get-build') {
       response.body = 'ok then 8'
     } else {
-      throw `BUILD: ${process.env.BUILD_ID} |
-Use one of the following api paths:
-/trending-github
-/upcoming-movies
-/trending-movies
-/trending-tv
-/upcoming-games
-/trending-npm-1
-/trending-npm-2`
-    }
-
-    if (response.body && !response.body.skipDB) {
-      console.log('save to db')
-      // await saveData(path, response.body)
+      console.log('IN ELSE')
     }
 
     response.body = 'wowee end'
