@@ -1,6 +1,6 @@
 ## Lambda which scrapes for data that I like to look at
-sls invoke local --function api --path ./local-data.json
 
+sls invoke local --function api --path ./local-data.json
 Available Endpoints
 
 - /trending-github
