@@ -1,4 +1,4 @@
-service: lambda-scraper-local
+service: lambda-scraper
 frameworkVersion: '2'
 useDotenv: true
 
