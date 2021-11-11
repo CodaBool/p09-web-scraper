@@ -58,7 +58,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           header: "Lambda which scrapes for data that I like to look at"
-          subhead: "Available Endpoints\n\n- /trending-github\n- /upcoming-movies\n- /trending-movies\n- /trending-tv\n- /upcoming-games\n- /trending-npm-1\n- /trending-npm-2"
+          subhead: "sls invoke local --function api --path ./local-data.json\nAvailable Endpoints\n\n- /trending-github\n- /upcoming-movies\n- /trending-movies\n- /trending-tv\n- /upcoming-games\n- /trending-npm-1\n- /trending-npm-2"
           footer: "${{ steps.stack.outputs.endpoint }}/api/REPLACE_THIS_PATH"
           repoCount: 0
 

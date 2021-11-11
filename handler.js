@@ -80,12 +80,7 @@ Use one of the following api paths:
 /upcoming-games
 /trending-npm-1
 /trending-npm-2`
-  const connection = await mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-    useCreateIndex: true
-  })
+  const connection = await mongoose.connect(process.env.MONGODB_URI)
   try {
     const quickSchema = new mongoose.Schema({}, { strict: false, timestamps: true, collection: path })
     const Model = mongoose.model(path, quickSchema)
@@ -98,12 +93,7 @@ Use one of the following api paths:
 }
 
 async function saveData(collection, data) {
-  const connection = await mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-    useCreateIndex: true
-  })
+  const connection = await mongoose.connect(process.env.MONGODB_URI)
   try {
     const quickSchema = new mongoose.Schema({}, { strict: false, timestamps: true, collection })
     const Model = mongoose.model(collection, quickSchema)
