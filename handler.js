@@ -83,7 +83,7 @@ Use one of the following api paths:
   const connection = await mongoose.connect(process.env.MONGODB_URI)
   try {
     const quickSchema = new mongoose.Schema({}, { strict: false, timestamps: true, collection: path })
-    const Model = mongoose.model(path, quickSchema)
+    const Model = mongoose.models.path || mongoose.model(path, quickSchema)
     return await Model.findOne({}, {}, { sort: { createdAt: -1 } }) // newest document, returns null if none
   } catch (error) {
     console.log(error)
@@ -96,7 +96,8 @@ async function saveData(collection, data) {
   const connection = await mongoose.connect(process.env.MONGODB_URI)
   try {
     const quickSchema = new mongoose.Schema({}, { strict: false, timestamps: true, collection })
-    const Model = mongoose.model(collection, quickSchema)
+    // const Model = mongoose.model(collection, quickSchema)
+    const Model = mongoose.models.collection || mongoose.model(collection, quickSchema)
     const doc = new Model(data)
     await doc.save()
   } catch (error) {
