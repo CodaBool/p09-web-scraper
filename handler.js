@@ -6,10 +6,7 @@ const format = require('pg-format')
 
 const { JSDOM } = jsdom
 
-const db = new pg.Client({ 
-  connectionString: process.env.PG_URI, 
-  ssl: { rejectUnauthorized: false } 
-})
+
 
 module.exports.api = async event => {
   let response = { 
@@ -60,6 +57,10 @@ module.exports.api = async event => {
   
       if (response.body && (path !== 'get_build')) { // write
         console.log('save to db')
+        const db = new pg.Client({ 
+          connectionString: process.env.PG_URI, 
+          ssl: { rejectUnauthorized: false } 
+        })
         await db.connect()
         let { deleteSQL, insertSQL } = generateSQL(path, response.body)
         // console.log('SQL DUMP', deleteSQL)
@@ -69,11 +70,23 @@ module.exports.api = async event => {
         console.log('db query res', res)
       }
     } else { // read
+      const db = new pg.Client({ 
+        connectionString: process.env.PG_URI, 
+        ssl: { rejectUnauthorized: false } 
+      })
       console.log('read request')
       await db.connect()
       const readSQL = generateSQL(path, null, true)
       console.log('read sql =',readSQL)
-
+      if (!readSQL) throw `BUILD: ${process.env.BUILD_ID} |
+Use one of the following api paths:
+/trending_github
+/upcoming_movies
+/trending_movies
+/trending_tv
+/upcoming_games
+/trending_npm_1
+/trending_npm_2`
       const rows = await db.query(readSQL).then(res => res.rows)
       console.log('rows', rows)
     }
