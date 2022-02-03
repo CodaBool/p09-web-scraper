@@ -62,16 +62,19 @@ module.exports.api = async event => {
         console.log('save to db')
         await db.connect()
         let { deleteSQL, insertSQL } = generateSQL(path, response.body)
-        console.log('SQL DUMP', deleteSQL)
+        // console.log('SQL DUMP', deleteSQL)
         await db.query(deleteSQL)
-        console.log('insert sql!!!', insertSQL)
+        // console.log('insert sql!!!', insertSQL)
         const res = await db.query(insertSQL).then(res => res.rowCount)
-        console.log('res', res)
+        console.log('db query res', res)
       }
     } else { // read
       console.log('read request')
       await db.connect()
-      const rows = await db.query('SELECT * FROM $1', path).then(res => res.rows)
+      const readSQL = generateSQL(path, null, true)
+      console.log('read sql =',readSQL)
+
+      const rows = await db.query(readSQL).then(res => res.rows)
       console.log('rows', rows)
     }
     response.body = JSON.stringify(response.body, null, 2)
@@ -96,33 +99,42 @@ function toArr(rawData) {
   })
 }
 
-function generateSQL(path, data) {
+function generateSQL(path, data, isRead) {
   let deleteSQL = null
   let insertSQL = null
+  let readSQL = null
   if (path === 'trending_github') {
     deleteSQL = 'DELETE FROM trending_github'
     insertSQL = 'trending_github(name, href, description, stars)'
+    readSQL = 'SELECT * FROM trending_github'
   } else if (path === 'trending_npm_1') {
     deleteSQL = 'DELETE FROM trending_npm_1'
     insertSQL = 'trending_npm_1(subject, page, rank, title, description)'
+    readSQL = 'SELECT * FROM trending_npm_1'
   } else if (path === 'trending_movies') {
     deleteSQL = 'DELETE FROM trending_movies'
     insertSQL = 'trending_movies(link, img, title, year, rank, velocity, rating)'
+    readSQL = 'SELECT * FROM trending_movies'
   } else if (path === 'trending_npm_2') {
     deleteSQL = 'DELETE FROM trending_npm_2'
     insertSQL = 'trending_npm_2(rank, page, link, name, description, stars)'
+    readSQL = 'SELECT * FROM trending_npm_2'
   } else if (path === 'trending_tv') {
     deleteSQL = 'DELETE FROM trending_tv'
     insertSQL = 'trending_tv(link, img, title, rank, velocity, rating)'
+    readSQL = 'SELECT * FROM trending_tv'
   } else if (path === 'upcoming_games') {
     deleteSQL = 'DELETE FROM upcoming_games'
     insertSQL = 'upcoming_games(link, img, name, release)'
+    readSQL = 'SELECT * FROM upcoming_games'
   } else if (path === 'upcoming_movies') {
+    if (isRead) return 'SELECT * FROM upcoming_movies'
     return {
       deleteSQL: 'DELETE FROM upcoming_movies',
       insertSQL: format(`INSERT INTO upcoming_movies(raw_json) VALUES(%L)`, [JSON.stringify(data)])
     }
   } else return
+  if (isRead) return readSQL
   return {
     deleteSQL,
     insertSQL: format(`INSERT INTO ${insertSQL} VALUES %L`, toArr(data))
