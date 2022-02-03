@@ -3,13 +3,13 @@
 sls invoke local --function api --path ./local-data.json
 Available Endpoints
 
-- /trending-github
-- /upcoming-movies
-- /trending-movies
-- /trending-tv
-- /upcoming-games
-- /trending-npm-1
-- /trending-npm-2
+- /trending_github
+- /upcoming_movies
+- /trending_movies
+- /trending_tv
+- /upcoming_games
+- /trending_npm_1
+- /trending_npm_2
 
 ---
 

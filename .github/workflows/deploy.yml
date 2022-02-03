@@ -32,8 +32,8 @@ jobs:
           npx serverless config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           npx serverless deploy --verbose --conceal --stage ${{ steps.extract.outputs.stage }}
         env:
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
           GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+          PG_URI: ${{ secrets.PG_URI }}
           BUILD_ID: ${{ steps.extract.outputs.build }}
           STAGE: ${{ steps.extract.outputs.stage }}
           REPO: ${{ steps.extract.outputs.repo }}
@@ -58,7 +58,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           header: "Lambda which scrapes for data that I like to look at"
-          subhead: "sls invoke local --function api --path ./local-data.json\nAvailable Endpoints\n\n- /trending-github\n- /upcoming-movies\n- /trending-movies\n- /trending-tv\n- /upcoming-games\n- /trending-npm-1\n- /trending-npm-2"
+          subhead: "sls invoke local --function api --path ./local-data.json\nAvailable Endpoints\n\n- /trending_github\n- /upcoming_movies\n- /trending_movies\n- /trending_tv\n- /upcoming_games\n- /trending_npm_1\n- /trending_npm_2"
           footer: "${{ steps.stack.outputs.endpoint }}/api/REPLACE_THIS_PATH"
           repoCount: 0
 

@@ -12,7 +12,9 @@
   "dependencies": {
     "axios": "^0.24.0",
     "jsdom": "^16.6.0",
-    "mongoose": "^6.0.12"
+    "mongoose": "^6.0.12",
+    "pg": "^8.7.1",
+    "pg-format": "^1.0.4"
   },
   "devDependencies": {
     "dotenv": "^10.0.0"

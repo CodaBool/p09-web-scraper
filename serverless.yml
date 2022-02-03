@@ -18,7 +18,7 @@ functions:
       GIT_TOKEN: ${env:GIT_TOKEN}
       BUILD_ID: ${env:BUILD_ID}
       STAGE: ${env:STAGE}
-      MONGODB_URI: ${env:MONGODB_URI}
+      PG_URI: ${env:PG_URI}
       KEY: ${env:KEY}
     events:
       - http: any /api/{id}

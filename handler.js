@@ -1,9 +1,15 @@
 'use strict'
 const jsdom = require('jsdom')
 const axios = require('axios')
-const mongoose = require('mongoose')
+const pg = require('pg')
+const format = require('pg-format')
 
 const { JSDOM } = jsdom
+
+const db = new pg.Client({ 
+  connectionString: process.env.PG_URI, 
+  ssl: { rejectUnauthorized: false } 
+})
 
 module.exports.api = async event => {
   let response = { 
@@ -18,46 +24,55 @@ module.exports.api = async event => {
   try {
     const path = event.pathParameters?.id
     const creationKey = event.queryStringParameters?.key
-    // console.log('key', creationKey)
+
     if (creationKey) { // write
       if (creationKey !== process.env.KEY) throw 'Wrong key'
 
-      if (path === 'trending-github') {
+      if (path === 'trending_github') {
         if (!process.env.GIT_TOKEN) throw 'undefined GIT_TOKEN env var'
         response.body = await githubTrends()
-        // console.log('got data here')
-      } else if (path === 'upcoming-movies') {
+      } else if (path === 'upcoming_movies') {
         response.body = await getUpComingMovies()
-      } else if (path === 'trending-movies') {
+      } else if (path === 'trending_movies') {
         response.body = await getTrendingMovie()
-      } else if (path === 'trending-tv') {
+      } else if (path === 'trending_tv') {
         response.body = await getTrendingTV()
-      } else if (path === 'upcoming-games') {
+      } else if (path === 'upcoming_games') {
         response.body = await upcomingGames()
-      } else if (path === 'trending-npm-1') {
+      } else if (path === 'trending_npm_1') {
         response.body = await getNpmTrend()
-      } else if (path === 'trending-npm-2') {
+      } else if (path === 'trending_npm_2') {
         response.body = await getNpmTrendAlt()
-      } else if (path === 'get-build') {
+        console.log('raw data', response.body)
+      } else if (path === 'get_build') {
         response.body = process.env.BUILD_ID
       } else {
         throw `BUILD: ${process.env.BUILD_ID} |
   Use one of the following api paths:
-  /trending-github
-  /upcoming-movies
-  /trending-movies
-  /trending-tv
-  /upcoming-games
-  /trending-npm-1
-  /trending-npm-2`
+  /trending_github
+  /upcoming_movies
+  /trending_movies
+  /trending_tv
+  /upcoming_games
+  /trending_npm_1
+  /trending_npm_2`
       }
   
-      if (response.body && (path !== 'get-build')) {
+      if (response.body && (path !== 'get_build')) { // write
         console.log('save to db')
-        await saveData(path, response.body)
+        await db.connect()
+        let { deleteSQL, insertSQL } = generateSQL(path, response.body)
+        console.log('SQL DUMP', deleteSQL)
+        await db.query(deleteSQL)
+        console.log('insert sql!!!', insertSQL)
+        const res = await db.query(insertSQL).then(res => res.rowCount)
+        console.log('res', res)
       }
     } else { // read
-      response.body = await getCollection(path)
+      console.log('read request')
+      await db.connect()
+      const rows = await db.query('SELECT * FROM $1', path).then(res => res.rows)
+      console.log('rows', rows)
     }
     response.body = JSON.stringify(response.body, null, 2)
   } catch (err) {
@@ -67,43 +82,50 @@ module.exports.api = async event => {
     } else {
       response = { statusCode: 500, body: (err.message || err)}
     }
-  } finally { return response }
-}
-
-async function getCollection(path) {
-  if (!path) throw `BUILD: ${process.env.BUILD_ID} |
-Use one of the following api paths:
-/trending-github
-/upcoming-movies
-/trending-movies
-/trending-tv
-/upcoming-games
-/trending-npm-1
-/trending-npm-2`
-  const connection = await mongoose.connect(process.env.MONGODB_URI)
-  try {
-    const quickSchema = new mongoose.Schema({}, { strict: false, timestamps: true, collection: path })
-    const Model = mongoose.models[`${path}`] || mongoose.model(path, quickSchema)
-    return await Model.findOne({}, {}, { sort: { createdAt: -1 } }) // newest document, returns null if none
-  } catch (error) {
-    console.log(error)
-  } finally {
-    connection?.disconnect()
+  } finally { 
+    await db.end()
+    return response
   }
 }
 
-async function saveData(collection, data) {
-  const connection = await mongoose.connect(process.env.MONGODB_URI)
-  try {
-    const quickSchema = new mongoose.Schema({}, { strict: false, timestamps: true, collection })
-    // const Model = mongoose.model(collection, quickSchema)
-    const Model = mongoose.models[`${collection}`] || mongoose.model(collection, quickSchema)
-    const doc = new Model(data)
-    await doc.save()
-  } catch (error) {
-    console.log(error)
-  } finally {
-    connection?.disconnect()
+function toArr(rawData) {
+  return rawData.map(obj => {
+    return Object.keys(obj).map(key => { 
+      return obj[key]
+    })
+  })
+}
+
+function generateSQL(path, data) {
+  let deleteSQL = null
+  let insertSQL = null
+  if (path === 'trending_github') {
+    deleteSQL = 'DELETE FROM trending_github'
+    insertSQL = 'trending_github(name, href, description, stars)'
+  } else if (path === 'trending_npm_1') {
+    deleteSQL = 'DELETE FROM trending_npm_1'
+    insertSQL = 'trending_npm_1(subject, page, rank, title, description)'
+  } else if (path === 'trending_movies') {
+    deleteSQL = 'DELETE FROM trending_movies'
+    insertSQL = 'trending_movies(link, img, title, year, rank, velocity, rating)'
+  } else if (path === 'trending_npm_2') {
+    deleteSQL = 'DELETE FROM trending_npm_2'
+    insertSQL = 'trending_npm_2(rank, page, link, name, description, stars)'
+  } else if (path === 'trending_tv') {
+    deleteSQL = 'DELETE FROM trending_tv'
+    insertSQL = 'trending_tv(link, img, title, rank, velocity, rating)'
+  } else if (path === 'upcoming_games') {
+    deleteSQL = 'DELETE FROM upcoming_games'
+    insertSQL = 'upcoming_games(link, img, name, release)'
+  } else if (path === 'upcoming_movies') {
+    return {
+      deleteSQL: 'DELETE FROM upcoming_movies',
+      insertSQL: format(`INSERT INTO upcoming_movies(raw_json) VALUES(%L)`, [JSON.stringify(data)])
+    }
+  } else return
+  return {
+    deleteSQL,
+    insertSQL: format(`INSERT INTO ${insertSQL} VALUES %L`, toArr(data))
   }
 }
 
@@ -143,25 +165,31 @@ async function getUpComingMovies() {
     .catch(() => console.log('bad request'))
   const dom = new JSDOM(html)
   const main = dom.window.document.querySelector("#main")?.innerHTML
-  const data = {}
+  const data = []
   if (!main) return
 
+  let lastDate = null
   await Promise.all(main.split('\n').map(async line => {
     if (line) { // only read lines with content
+      let obj = {}
       if (line.includes('<h4>')) { // date
-        const text = line.replace(/<[^>]+>/g, '').trim().replace(/ /g, '_')
-        data[text] = []
+        // date = line.replace(/<[^>]+>/g, '').trim().replace(/ /g, '_')
+        // const dateArr = line.replace(/<[^>]+>/g, '').trim().split(' ')
+        // const date = Date.parse(`${dateArr[0]} ${dateArr[1]} ${dateArr[2]}`)
+        lastDate = line.replace(/<[^>]+>/g, '').trim()
       } else if (line.includes('<a')) { // movie
-        const lastDate = Object.keys(data)[Object.keys(data).length - 1]
-        const partial = line.split('>')[1]
-        const title = partial.substring(0, partial.length - 3);
-        const href = 'https://www.imdb.com' + line.split('\"')[1]
+        obj.date = lastDate ? lastDate : 'None'
 
+        // const lastDate = Object.keys(data)[Object.keys(data).length - 1]
+        const partial = line.split('>')[1]
+        obj.title = partial.substring(0, partial.length - 3)
+        // console.log('loop over', obj.title, '| last date was', lastDate)
+
+        obj.href = 'https://www.imdb.com' + line.split('\"')[1]
         // const img = await getImage(title)
-        let img = ''
+        // let img = ''
 
         // TODO: solve issue with stalled requests 
-
         // const query = encodeURIComponent(title).replace(/%20/g, "+")
         // console.log('fetching thumbnail for', title, '...')
         // const htmlImg = await axios.get(`https://m.imdb.com/find?q=${query}`)
@@ -182,12 +210,13 @@ async function getUpComingMovies() {
         //   console.log('a bad req was detected')
         // }
 
-        const arr = data[lastDate]
-        console.log('+', title, '| img =', !!img)
+        // console.log('+', title)
         // console.log('DEBUG:', { title, href, img })
-        arr.push({ title, href, img })
-        data[lastDate] = arr
+        
+        // { title, href, date: date }
+        // data[lastDate] = arr
       }
+      if (obj.title) data.push(obj)
     }
   }))
   return data
@@ -334,7 +363,14 @@ async function getNpmTrend() {
           const item = { subject, page, rank }
           item.title = result.firstChild.firstChild.firstChild.lastChild.textContent
           // console.log('+', item.title)
+          item.description = 'None' // some npm have no descrition eg. @devoralime/server
           for (const node of result.firstChild.childNodes) { // all nodes inside 1st div of results
+
+            if (item.title === '@devoralime/server') {
+              console.log('raw node', node)
+              console.log('node text', node.textContent)
+              console.log('node name', node.nodeName)
+            }
             if (node.nodeName === 'P') { // description
               item.description = node.textContent
             }
