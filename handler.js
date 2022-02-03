@@ -19,6 +19,10 @@ module.exports.api = async event => {
     },
   }
   try {
+    const db = new pg.Client({ 
+      connectionString: process.env.PG_URI, 
+      ssl: { rejectUnauthorized: false } 
+    })
     const path = event.pathParameters?.id
     const creationKey = event.queryStringParameters?.key
 
@@ -57,10 +61,6 @@ module.exports.api = async event => {
   
       if (response.body && (path !== 'get_build')) { // write
         console.log('save to db')
-        const db = new pg.Client({ 
-          connectionString: process.env.PG_URI, 
-          ssl: { rejectUnauthorized: false } 
-        })
         await db.connect()
         let { deleteSQL, insertSQL } = generateSQL(path, response.body)
         // console.log('SQL DUMP', deleteSQL)
@@ -70,10 +70,6 @@ module.exports.api = async event => {
         console.log('db query res', res)
       }
     } else { // read
-      const db = new pg.Client({ 
-        connectionString: process.env.PG_URI, 
-        ssl: { rejectUnauthorized: false } 
-      })
       console.log('read request')
       await db.connect()
       const readSQL = generateSQL(path, null, true)
