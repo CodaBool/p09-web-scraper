@@ -6,8 +6,6 @@ const format = require('pg-format')
 
 const { JSDOM } = jsdom
 
-
-
 module.exports.api = async event => {
   let response = { 
     statusCode: 200, 
@@ -18,11 +16,11 @@ module.exports.api = async event => {
       "Access-Control-Allow-Methods": "*"
     },
   }
+  const db = new pg.Client({ 
+    connectionString: process.env.PG_URI, 
+    ssl: { rejectUnauthorized: false } 
+  })
   try {
-    const db = new pg.Client({ 
-      connectionString: process.env.PG_URI, 
-      ssl: { rejectUnauthorized: false } 
-    })
     const path = event.pathParameters?.id
     const creationKey = event.queryStringParameters?.key
 
