@@ -18,6 +18,7 @@ module.exports.api = async event => {
   }
   const db = new pg.Client({ 
     connectionString: process.env.PG_URI, 
+    idle_in_transaction_session_timeout: 3000
     ssl: { rejectUnauthorized: false } 
   })
   try {
