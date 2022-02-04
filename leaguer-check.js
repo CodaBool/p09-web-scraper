@@ -42,17 +42,17 @@ client.on('ready', async () => {
   const lolkicks = client.guilds.cache.get(process.env.LOLKICK_ID)
   const members = lolkicks.members.cache.filter(member => HOMIES.includes(member.user.id))
   members.map(member => {
-    const name = member.user.username
+    // const name = member.user.username
     const activity = member.presence?.activities[0]?.name
     const id = member.user.id
     if (activity === 'League of Legends') {
       client.users.fetch(id, false).then(user => {
         const meme = memes[Math.floor(Math.random()*memes.length)]
-        await user.send(`nice cock ${name}\n${meme}`)
+        user.send(meme)
       })
     }
   })
-  process.exit()
+  setTimeout(() => process.exit(), 9000)
 })
 
 client.login(process.env.DISCORD_TOKEN)
