@@ -3,13 +3,12 @@ const Discord = require('discord.js')
 const asTable = require('as-table')
 const pg = require('pg')
 const axios = require('axios')
-// import Discord, { Client, Intents } from 'discord.js'
 
 // codabool = 684265204007305244
 // xenophile = 311657807361343489
 // acid4ain = 423616944890052629
 // cowpace = 189075494312869888
-// L = 442755839724486666
+
 const CODA_BOOL = '684265204007305244'
 const COWPACE = '189075494312869888'
 const XENOPHILE = '311657807361343489'
@@ -19,29 +18,18 @@ const API_URL = 'https://j8xl9nv9k9.execute-api.us-east-1.amazonaws.com/main/api
 const HOMIES = ['684265204007305244', '311657807361343489', '423616944890052629', '189075494312869888']
 
 // const allIntents = new Intents(32767)
-// console.log(allIntents) // allIntents
 const client = new Discord.Client({ 
   intents: ['GUILDS', 'DIRECT_MESSAGES', 'GUILD_MESSAGES', 'GUILD_PRESENCES', 'GUILD_MEMBERS', 'GUILD_MESSAGE_REACTIONS'], 
   partials: ['MESSAGE', 'CHANNEL']
 })
-
-// const CHANNEL_ID = process.env.CHANNEL_ID
-const CHANNEL_ID = process.env.CHANNEL_ID_TEST // bot test channel
 
 client.on('ready', async () => {
   console.log('ready')
   // client.users.fetch(COWPACE, false).then(user => {
   //   user.send(`nice cock`)
   // })
-  // client.users.fetch('189261390622490624', false).then(user => {
-  //   user.send(`nice cock`)
-  // })
-  // client.users.fetch('189261390622490624', false).then(user => {
-  //   user.send(`nice cock`)
-  // })
   // const lolkicks = client.guilds.cache.get(process.env.LOLKICK_ID)
   // const members = lolkicks.members.cache.filter(member => HOMIES.includes(member.user.id))
-
   // members.map(member => {
   //   const name = member.user.username
   //   const activity = member.presence?.activities[0]?.name
@@ -64,10 +52,10 @@ client.on('ready', async () => {
 client.on('messageCreate', async msg =>{
   if (msg.content === '!any-bots') {
     // console.log('user', msg.author)
-    client.channels.cache.get(CHANNEL_ID).send('yo')
+    client.channels.cache.get(process.env.HACKER_ID).send('yo')
 	}
   if (msg.content === '!help' || msg.content.includes('!h')) {
-		const channel = client.channels.cache.get(CHANNEL_ID)
+		const channel = client.channels.cache.get(process.env.HACKER_ID)
 		let embed = new Discord.MessageEmbed()
 				.setColor('#204194')
 				.addFields([{
@@ -102,8 +90,8 @@ client.on('messageCreate', async msg =>{
 	}
 	if (msg.content === '!github') {
     const res = await query('SELECT * FROM trending_github')
-    const channel = client.channels.cache.get(CHANNEL_ID)
-
+    const githubChannel = client.channels.cache.get(process.env.GITHUB_ID)
+		console.log('channel', githubChannel)
     // breaks 100 results into 5 arrays of twenty
     const reducedArr = reduce(res, 20)
 
@@ -118,7 +106,7 @@ client.on('messageCreate', async msg =>{
           })
         }
       }
-      channel.send('```md\npage (' + (j + 1) + '/5)\n' + asTable(data) + '```')
+      githubChannel.send('```md\npage (' + (j + 1) + '/5)\n' + asTable(data) + '```')
     }
     // ============ SINGLE asTable ============
     // guide https://anidiots.guide/first-bot/using-embeds-in-messages
@@ -132,7 +120,7 @@ client.on('messageCreate', async msg =>{
 	}
 	if (msg.content === '!npm-backend') {
     const res = await query('SELECT * FROM trending_npm_1')
-    const channel = client.channels.cache.get(CHANNEL_ID)
+    const channel = client.channels.cache.get(process.env.NPM_ID)
 
     const reducedArr = reduce(res, 20)
     for (let j = 0; j < 5; j++) {
@@ -152,7 +140,7 @@ client.on('messageCreate', async msg =>{
 	if (msg.content === '!npm-all') {
     const res = await query('SELECT * FROM trending_npm_2')
 
-    const channel = client.channels.cache.get(CHANNEL_ID)
+    const channel = client.channels.cache.get(process.env.NPM_ID)
     const reducedArr = reduce(res, 20)
     for (let j = 0; j < 5; j++) {
       const data = []
@@ -171,7 +159,7 @@ client.on('messageCreate', async msg =>{
 	}
 	if (msg.content === '!upcoming-games') {
     const res = await query('SELECT * FROM upcoming_games')
-    const channel = client.channels.cache.get(CHANNEL_ID)
+    const channel = client.channels.cache.get(process.env.GAMES_ID)
     let desc = ''
     res.forEach((game, index) => {
       if (index < 30) desc +=`[🔗](${game.link}) ${game.name}\n`
@@ -183,7 +171,7 @@ client.on('messageCreate', async msg =>{
     channel.send({embeds: [embed]})
 	}
 	if (msg.content.includes('!update') && !msg.author.bot) {
-		const channel = client.channels.cache.get(CHANNEL_ID)
+		const channel = client.channels.cache.get(process.env.HACKER_ID)
 		const args = msg.content.split(' ').filter(item => item !== '!update') // remove initial !update
 		if (args.includes('all')) {
 			['upcoming_movies', 'trending_movies', 'trending_tv', 'upcoming_games', 'trending_npm_1', 'trending_npm_2', 'trending_github'].forEach(item => {
@@ -250,7 +238,7 @@ client.on('messageCreate', async msg =>{
 	if (msg.content === '!upcoming-movies') {
     const res = await query('SELECT * FROM upcoming_movies')
 		const updatedAt = new Date(res[0].updated_at).toDateString()
-		const channel = client.channels.cache.get(CHANNEL_ID)
+		const channel = client.channels.cache.get(process.env.MOVIES_ID)
 		const rawMovies = res[0].raw_json
     const fields = []
 
@@ -280,7 +268,7 @@ client.on('messageCreate', async msg =>{
 		const res = await query('SELECT * FROM trending_movies')
 		const date = new Date(res[0].updated_at).toDateString()
 		const reducedArr = reduce(res, 25)
-		const channel = client.channels.cache.get(CHANNEL_ID)
+		const channel = client.channels.cache.get(process.env.MOVIES_ID)
 		for (let j = 0; j < 4; j++) {
 			const fields = []
 			for (let i = 0; i < 25; i++) {
@@ -323,7 +311,7 @@ client.on('messageCreate', async msg =>{
 		const res = await query('SELECT * FROM trending_tv')
 		const date = new Date(res[0].updated_at).toDateString()
 		const reducedArr = reduce(res, 25)
-		const channel = client.channels.cache.get(CHANNEL_ID)
+		const channel = client.channels.cache.get(process.env.TV_ID)
 		for (let j = 0; j < 4; j++) {
 			const fields = []
 			for (let i = 0; i < 25; i++) {
