@@ -7,11 +7,9 @@ const client = new Discord.Client({
 })
 
 client.on('ready', async () => {
-  const channel = await client.channels.cache.get(process.env.HACKER_ID)
-  channel.send('!update all')
-  .catch(err => console.log('err', err))
-  .finally(() => {
-    console.log('ok')
-    // process.exit()
-  })
+  const channel = client.channels.cache.get(process.env.HACKER_ID)
+  await channel.send('wowee')
+  process.exit()
 })
+
+client.login(process.env.DISCORD_TOKEN)
