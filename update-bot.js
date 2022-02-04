@@ -8,7 +8,7 @@ const client = new Discord.Client({
 
 client.on('ready', async () => {
   const channel = client.channels.cache.get(process.env.HACKER_ID)
-  await channel.send('wowee')
+  await channel.send('!monthly-update all')
   process.exit()
 })
 
