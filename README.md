@@ -13,6 +13,17 @@ Available Endpoints
 
 ---
 
+# Example local-data.json
+```json
+{
+  "pathParameters": {
+    "id": "upcoming_movies"
+  },
+  "queryStringParameters": {
+    "key": "GyGx3WJNiLthKUEpb4NUsVBuRbaVAW8pjRXReLNG"
+  }                                                               
+}
+```
 
 
 ---

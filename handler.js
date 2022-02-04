@@ -81,8 +81,8 @@ Use one of the following api paths:
 /upcoming_games
 /trending_npm_1
 /trending_npm_2`
-      const rows = await db.query(readSQL).then(res => res.rows)
-      console.log('rows', rows)
+      response.body = await db.query(readSQL).then(res => res.rows)
+      // console.log('rows', rows)
     }
     response.body = JSON.stringify(response.body, null, 2)
   } catch (err) {
