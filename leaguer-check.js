@@ -48,10 +48,11 @@ client.on('ready', async () => {
     if (activity === 'League of Legends') {
       client.users.fetch(id, false).then(user => {
         const meme = memes[Math.floor(Math.random()*memes.length)]
-        user.send(`nice cock ${name}\n${meme}`)
+        await user.send(`nice cock ${name}\n${meme}`)
       })
     }
   })
+  process.exit()
 })
 
 client.login(process.env.DISCORD_TOKEN)
