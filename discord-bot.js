@@ -170,14 +170,14 @@ client.on('messageCreate', async msg =>{
       .setDescription(desc)
     channel.send({embeds: [embed]})
 	}
-	if (msg.content.includes('!update') && !msg.author.bot) {
+	if ((msg.content.includes('!update') && !msg.author.bot) || msg.content === '!monthly-update all') {
 		const channel = client.channels.cache.get(process.env.HACKER_ID)
 		const args = msg.content.split(' ').filter(item => item !== '!update') // remove initial !update
 		if (args.includes('all')) {
 			['upcoming_movies', 'trending_movies', 'trending_tv', 'upcoming_games', 'trending_npm_1', 'trending_npm_2', 'trending_github'].forEach(item => {
 				console.log('update all requests', `${API_URL}/${item}?key=${process.env.KEY}`)
 				axios.get(`${API_URL}/${item}?key=${process.env.KEY}`)
-					.then(() => channel.send(`✅ Database successfully updated ${item} collection`))
+					.then(() => channel.send(`✅ Database successfully updated ${item} table`))
 					.catch(err => channel.send(`😨 Something went wrong ${err}`))
 			})
 		} else {
@@ -207,7 +207,7 @@ client.on('messageCreate', async msg =>{
 				['upcoming_movies', 'trending_movies', 'trending_tv', 'upcoming_games', 'trending_npm_1', 'trending_npm_2', 'trending_github'].forEach(item => {
 					console.log('request to', `${API_URL}/${item}?key=${process.env.KEY}`)
 					axios.get(`${API_URL}/${item}?key=${process.env.KEY}`)
-						.then(() => channel.send(`✅ Database successfully updated ${item} collection`))
+						.then(() => channel.send(`✅ Database successfully updated ${item} table`))
 						.catch(err => channel.send(`😨 Something went wrong ${err}`))
 				})
 			} else if (emote === '2⃣') {
@@ -228,7 +228,7 @@ client.on('messageCreate', async msg =>{
 			if (path) {
 				console.log('request to', `${API_URL}/${path}?key=${process.env.KEY}`)
 				axios.get(`${API_URL}/${path}?key=${process.env.KEY}`)
-					.then(() => channel.send(`✅ Database successfully updated ${path} collection`))
+					.then(() => channel.send(`✅ Database successfully updated ${path} table`))
 					.catch(err => channel.send(`😨 Something went wrong ${err}`))
 			}
 			message.react('🛑')
