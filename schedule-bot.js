@@ -2,20 +2,21 @@ require('dotenv').config()
 const Discord = require('discord.js')
 
 const client = new Discord.Client({ 
-  intents: ['GUILDS', 'DIRECT_MESSAGES', 'GUILD_MESSAGES', 'GUILD_MEMBERS'], 
+  intents: ['GUILDS', 'GUILD_MESSAGES'],
   partials: ['MESSAGE', 'CHANNEL']
 })
 
-client.on('ready', () => {
-  console.log('ready')
-  // let day = new Date().getDate()
+client.on('ready', async () => {
   const channel = client.channels.cache.get(process.env.HACKER_ID)
-  channel.send('!h')
+  channel.send('!github')
+  channel.send('!npm-backend')
+  channel.send('!npm-all')
+  channel.send('!upcoming-games')
+  channel.send('!update')
+  channel.send('!upcoming-movies')
+  channel.send('!trending-movies')
+  await channel.send('!trending-tv')
+  process.exit()
 })
-// client.on('messageCreate', async msg =>{
-//   if (msg.content === '!any-bots') {
-//     client.channels.cache.get(process.env.HACKER_ID).send('yo')
-// 	}
-// })
 
 client.login(process.env.DISCORD_TOKEN)
