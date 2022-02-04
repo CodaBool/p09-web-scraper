@@ -4,19 +4,19 @@
   "description": "",
   "main": "handler.js",
   "scripts": {
-    "start": "echo 'This script should be ran with sls invoke local, read more in the README.md'"
+    "start": "echo 'This script should be ran with sls invoke local, read more in the README.md'",
+    "bot": "node discord-bot.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "as-table": "^1.0.55",
     "axios": "^0.24.0",
+    "discord.js": "^13.6.0",
+    "dotenv": "^16.0.0",
     "jsdom": "^16.6.0",
-    "mongoose": "^6.0.12",
     "pg": "^8.7.1",
     "pg-format": "^1.0.4"
-  },
-  "devDependencies": {
-    "dotenv": "^10.0.0"
   }
 }
