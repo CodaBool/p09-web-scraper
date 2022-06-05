@@ -11,6 +11,7 @@ client.on('ready', async () => {
   await channel.send('!github')
   await channel.send('!npm-all')
   await channel.send('!trending-movies')
+  await channel.send('!trending-tv')
   await channel.send('!upcoming-games')
   await channel.send('!upcoming-movies')
   process.exit()
