@@ -91,7 +91,7 @@ client.on('messageCreate', async msg =>{
 	if (msg.content === '!github') {
     const res = await query('SELECT * FROM trending_github')
     const githubChannel = client.channels.cache.get(process.env.GITHUB_ID)
-		console.log('channel', githubChannel)
+		// console.log('channel', githubChannel)
     // breaks 100 results into 5 arrays of twenty
     const reducedArr = reduce(res, 20)
 
@@ -153,7 +153,7 @@ client.on('messageCreate', async msg =>{
           })
         }
       }
-      console.log('DEBUG: sending table with', asTable(data).length, 'length') // 2000
+      // console.log('DEBUG: sending table with', asTable(data).length, 'length') // 2000
       channel.send('```md\npage (' + (j + 1) + '/5)\n' + asTable(data) + '```')
     }
 	}
