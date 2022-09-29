@@ -17,9 +17,8 @@ module.exports.api = async event => {
     },
   }
   const db = new pg.Client({ 
-    connectionString: process.env.PG_URI, 
-    idle_in_transaction_session_timeout: 1000,
-    ssl: { rejectUnauthorized: false } 
+    connectionString: process.env.PG_URI,
+    ssl: { rejectUnauthorized: false }
   })
   try {
     const path = event.pathParameters?.id
@@ -33,6 +32,7 @@ module.exports.api = async event => {
         response.body = await githubTrends()
       } else if (path === 'upcoming_movies') {
         response.body = await getUpComingMovies()
+        console.log('body', response.body)
       } else if (path === 'trending_movies') {
         response.body = await getTrendingMovie()
       } else if (path === 'trending_tv') {
@@ -62,9 +62,9 @@ module.exports.api = async event => {
         console.log('save to db')
         await db.connect()
         let { deleteSQL, insertSQL } = generateSQL(path, response.body)
-        // console.log('SQL DUMP', deleteSQL)
+        console.log('SQL DUMP', deleteSQL)
         await db.query(deleteSQL)
-        // console.log('insert sql!!!', insertSQL)
+        console.log('insert sql!!!', insertSQL)
         const res = await db.query(insertSQL).then(res => res.rowCount)
         console.log('db query res', res)
       }
@@ -184,8 +184,14 @@ async function getUpComingMovies() {
     .then(res => res.data)
     .catch(() => console.log('bad request'))
   const dom = new JSDOM(html)
+  console.log('')
   const main = dom.window.document.querySelector("#main")?.innerHTML
+  const main2 = dom.window.document.getElementsByTagName("main")?.innerHTML
+  // document[0]
   const data = []
+  // console.log('html', html)
+  console.log('main', main)
+  console.log('main2', main2)
   if (!main) return
 
   let lastDate = null
@@ -203,7 +209,7 @@ async function getUpComingMovies() {
         // const lastDate = Object.keys(data)[Object.keys(data).length - 1]
         const partial = line.split('>')[1]
         obj.title = partial.substring(0, partial.length - 3)
-        // console.log('loop over', obj.title, '| last date was', lastDate)
+        console.log('loop over', obj.title, '| last date was', lastDate)
 
         obj.href = 'https://www.imdb.com' + line.split('\"')[1]
         // const img = await getImage(title)
@@ -211,7 +217,7 @@ async function getUpComingMovies() {
 
         // TODO: solve issue with stalled requests 
         // const query = encodeURIComponent(title).replace(/%20/g, "+")
-        // console.log('fetching thumbnail for', title, '...')
+        // console.log('fetching thumbnail for', obj.title, '...')
         // const htmlImg = await axios.get(`https://m.imdb.com/find?q=${query}`)
         //   .then(res => res.data)
         //   .catch(() => console.log('bad img req'))
@@ -230,7 +236,7 @@ async function getUpComingMovies() {
         //   console.log('a bad req was detected')
         // }
 
-        // console.log('+', title)
+        console.log('+', obj.title)
         // console.log('DEBUG:', { title, href, img })
         
         // { title, href, date: date }
@@ -239,6 +245,7 @@ async function getUpComingMovies() {
       if (obj.title) data.push(obj)
     }
   }))
+  console.log('data', data)
   return data
 }
 
