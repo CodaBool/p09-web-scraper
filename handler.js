@@ -380,7 +380,7 @@ async function getNpmTrend() {
         .then(res => res.data)
         .catch(console.log) //ECONNRESET
       const dom = new JSDOM(html)
-      const list = dom.window.document.getElementsByTagName("main").item(0)?.childNodes[1]?.childNodes[1]
+      const list = dom.window.document.getElementsByTagName("main").item(0)?.childNodes[2]?.childNodes[1]
       if (!list) {
         console.log('no results found')
         return
