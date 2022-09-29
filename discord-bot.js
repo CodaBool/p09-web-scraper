@@ -19,8 +19,8 @@ const HOMIES = ['684265204007305244', '311657807361343489', '423616944890052629'
 
 // const allIntents = new Intents(32767)
 const client = new Discord.Client({ 
-  intents: ['GUILDS', 'DIRECT_MESSAGES', 'GUILD_MESSAGES', 'GUILD_PRESENCES', 'GUILD_MEMBERS', 'GUILD_MESSAGE_REACTIONS'], 
-  partials: ['MESSAGE', 'CHANNEL']
+  intents: [Discord.GatewayIntentBits.Guilds, Discord.GatewayIntentBits.DirectMessages, Discord.GatewayIntentBits.GuildMessages, Discord.GatewayIntentBits.GuildPresences, Discord.GatewayIntentBits.GuildMembers, Discord.GatewayIntentBits.GuildMessageReactions, Discord.GatewayIntentBits.MessageContent], 
+  partials: [Discord.Partials.Message, Discord.Partials.Channel, Discord.Partials.Reaction]
 })
 
 client.on('ready', async () => {
@@ -51,42 +51,47 @@ client.on('ready', async () => {
 
 client.on('messageCreate', async msg =>{
   if (msg.content === '!any-bots') {
-    // console.log('user', msg.author)
-    client.channels.cache.get(process.env.HACKER_ID).send('yo')
+		client.channels.cache.get(process.env.HACKER_ID).send('yo')
 	}
+
   if (msg.content === '!help' || msg.content.includes('!h')) {
 		const channel = client.channels.cache.get(process.env.HACKER_ID)
-		let embed = new Discord.MessageEmbed()
-				.setColor('#204194')
-				.addFields([{
-					name: '!update',
-					value: 'this will update the scraped data in the database'
-				}, {
-					name: '!github',
-					value: 'Shows the trending github repos'
-				}, {
-					name: '!upcoming-movies',
-					value: 'Shows the upcoming movies from imdb'
-				}, {
-					name: '!trending-movies',
-					value: 'Shows the popular movies from imdb'
-				}, {
-					name: '!trending-tv',
-					value: 'Shows the popular tv shows from imdb'
-				}, {
-					name: '!upcoming-games',
-					value: 'Shows the upcoming steam games'
-				}, {
-					name: '!npm-backend',
-					value: 'Shows the popular npm packages under the backend category from npmjs.com'
-				}, {
-					name: '!npm-all',
-					value: 'Shows the all popular npm packages from libraries.io'
-				}])
-				.setTitle('Commands')
-				.setAuthor({ name: 'CodaBot', url: 'https://github.com/CodaBool/p09-scraper-consumer/blob/main/discord-bot/index.js', iconURL: 'https://i.imgur.com/pHPpNA6.png' })
-				.setThumbnail('https://i.imgur.com/ShZVJwz.png')
-      channel.send({embeds: [embed]})
+
+		// new Discord.EmbedBuilder()
+		// 	.setColor('#204194')
+
+		let embed = new Discord.EmbedBuilder()
+			.setColor('#204194')
+			.addFields([{
+				name: '!update',
+				value: 'this will update the scraped data in the database'
+			}, {
+				name: '!github',
+				value: 'Shows the trending github repos'
+			}, {
+				name: '!upcoming-movies',
+				value: 'Shows the upcoming movies from imdb'
+			}, {
+				name: '!trending-movies',
+				value: 'Shows the popular movies from imdb'
+			}, {
+				name: '!trending-tv',
+				value: 'Shows the popular tv shows from imdb'
+			}, {
+				name: '!upcoming-games',
+				value: 'Shows the upcoming steam games'
+			}, {
+				name: '!npm-backend',
+				value: 'Shows the popular npm packages under the backend category from npmjs.com'
+			}, {
+				name: '!npm-all',
+				value: 'Shows the all popular npm packages from libraries.io'
+			}])
+			.setTitle('Commands')
+			.setAuthor({ name: 'CodaBot', url: 'https://github.com/CodaBool/p09-scraper-consumer/blob/main/discord-bot/index.js', iconURL: 'https://i.imgur.com/pHPpNA6.png' })
+			.setThumbnail('https://i.imgur.com/ShZVJwz.png')
+		channel.send({embeds: [embed]})
+		// msg.channel.send({embeds: [embed]})
 	}
 	if (msg.content === '!github') {
     const res = await query('SELECT * FROM trending_github')
@@ -110,7 +115,7 @@ client.on('messageCreate', async msg =>{
     }
     // ============ SINGLE asTable ============
     // guide https://anidiots.guide/first-bot/using-embeds-in-messages
-    // const exampleEmbed = new Discord.MessageEmbed() // embed max 6000
+    // const exampleEmbed = new Discord.EmbedBuilder() // embed max 6000
     // 	.setColor('#de0000')
     // 	.setTitle('Github top 100 repos by stars')
     // 	.setDescription('```md\n'+ table.toString() +'```')
@@ -118,23 +123,25 @@ client.on('messageCreate', async msg =>{
     // const channel = client.channels.cache.get(CHANNEL_ID)
     // channel.send(exampleEmbed)
 	}
-	if (msg.content === '!npm-backend') {
+	if (msg.content === '!npm-category') {
     const res = await query('SELECT * FROM trending_npm_1')
     const channel = client.channels.cache.get(process.env.NPM_ID)
 
     const reducedArr = reduce(res, 20)
+		// updated_at
     for (let j = 0; j < 5; j++) {
       const data = []
       for (let i = 0; i < 20; i++) {
         if (reducedArr[j][i]) {
           data.push({
+						rank: Number(reducedArr[j][i].rank) + 1,
             package: reducedArr[j][i].title,
-            description: reducedArr[j][i].description.slice(0, 35)
+            description: reducedArr[j][i].description.slice(0, 35),
           })
         }
       }
       // console.log('DEBUG: sending table with', asTable(data).length, 'length') // 2000
-      channel.send('```md\npage (' + (j + 1) + '/5)\n' + asTable(data) + '```')
+      channel.send('```md\nMost popular ' + reducedArr[j][0].subject.toUpperCase() + ' node modules. Scraped ' + new Date(reducedArr[j][0]['updated_at']).toDateString() + '\n' + asTable(data) + '```')
     }
 	}
 	if (msg.content === '!npm-all') {
@@ -154,7 +161,7 @@ client.on('messageCreate', async msg =>{
         }
       }
       // console.log('DEBUG: sending table with', asTable(data).length, 'length') // 2000
-      channel.send('```md\npage (' + (j + 1) + '/5)\n' + asTable(data) + '```')
+      channel.send('```md\npage (' + (j + 1) + '/5) Scraped ' + new Date(reducedArr[j][0]['updated_at']).toDateString() + '\n' + asTable(data) + '```')
     }
 	}
 	if (msg.content === '!upcoming-games') {
@@ -164,7 +171,7 @@ client.on('messageCreate', async msg =>{
     res.forEach((game, index) => {
       if (index < 30) desc +=`[🔗](${game.link}) ${game.name}\n`
     })
-    const embed = new Discord.MessageEmbed() // embed max 6000
+    const embed = new Discord.EmbedBuilder() // embed max 6000
       .setColor('#de0000')
       .setTitle('Upcoming Games')
       .setDescription(desc)
@@ -181,7 +188,7 @@ client.on('messageCreate', async msg =>{
 					.catch(err => channel.send(`😨 Something went wrong ${err}`))
 			})
 		} else {
-			let embed = new Discord.MessageEmbed()
+			let embed = new Discord.EmbedBuilder()
 				.setColor('#204194')
 				.setDescription('Select a reaction button corresponding to the item in the numbered list of database collections. This will send a request for new data to be scraped. The update command will only watch for reactions for 15 seconds and will add the 🛑 reaction to show that the command is no longer listening.')
 				.addFields([{
@@ -254,7 +261,7 @@ client.on('messageCreate', async msg =>{
 			}
 			fields.push({ name: date, value })
     }
-    let monthEmbed = new Discord.MessageEmbed() // embed max 6000
+    let monthEmbed = new Discord.EmbedBuilder() // embed max 6000
       .setColor('#FFFF00')
       .addFields(...fields)
       .setTitle('Upcoming Movies')
@@ -293,7 +300,7 @@ client.on('messageCreate', async msg =>{
 					})
 				}
 			}
-			const monthEmbed = new Discord.MessageEmbed() // embed max 6000
+			const monthEmbed = new Discord.EmbedBuilder() // embed max 6000
 				.setColor('#FFFF00')
 				.addFields(...fields)
 				.setTitle('Trending Movies')
@@ -337,7 +344,7 @@ client.on('messageCreate', async msg =>{
 				}
 			}
 			console.log(fields)
-			const monthEmbed = new Discord.MessageEmbed() // embed max 6000
+			const monthEmbed = new Discord.EmbedBuilder() // embed max 6000
 				.setColor('#FFFF00')
 				.addFields(...fields)
 				.setTitle('Trending TV')
