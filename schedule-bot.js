@@ -9,7 +9,7 @@ const client = new Discord.Client({
 client.on('ready', async () => {
   const channel = client.channels.cache.get(process.env.HACKER_ID)
   channel.send('!github')
-  channel.send('!npm-backend')
+  channel.send('!npm-category')
   channel.send('!npm-all')
   channel.send('!upcoming-games')
   channel.send('!update')

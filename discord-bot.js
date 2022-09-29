@@ -81,7 +81,7 @@ client.on('messageCreate', async msg =>{
 				name: '!upcoming-games',
 				value: 'Shows the upcoming steam games'
 			}, {
-				name: '!npm-backend',
+				name: '!npm-category',
 				value: 'Shows the popular npm packages under the backend category from npmjs.com'
 			}, {
 				name: '!npm-all',
