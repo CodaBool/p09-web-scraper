@@ -203,7 +203,7 @@ client.on('messageCreate', async msg =>{
 			['upcoming_movies', 'trending_movies', 'tv', 'games', 'npm', 'pypi', 'github'].forEach(item => {
 				const command = new sqs.SendMessageCommand({
 					MessageBody: `/v1/${item}@${process.env.KEY}`,
-					QueueUrl: 'https://sqs.us-east-1.amazonaws.com/919759177803/test'
+					QueueUrl: 'https://sqs.us-east-1.amazonaws.com/919759177803/scraper'
 				})
 				promises.push(new Promise((resolve, reject) => {
 					clientSQS.send(command).then(() => resolve(item)).catch(() => reject(item))
@@ -247,7 +247,7 @@ client.on('messageCreate', async msg =>{
 				['upcoming_movies', 'trending_movies', 'trending_tv', 'trending_games', 'trending_npm', 'trending_pypi', 'trending_github'].forEach(item => {
 					const command = new sqs.SendMessageCommand({
 						MessageBody: `/v1/${item}@${process.env.KEY}`,
-						QueueUrl: 'https://sqs.us-east-1.amazonaws.com/919759177803/test'
+						QueueUrl: 'https://sqs.us-east-1.amazonaws.com/919759177803/scraper'
 					})
 					promises.push(new Promise((resolve, reject) => {
 						clientSQS.send(command).then(() => resolve(item)).catch(() => reject(item))
@@ -283,7 +283,7 @@ client.on('messageCreate', async msg =>{
 			if (path) {
 				const command = new sqs.SendMessageCommand({
 					MessageBody: `/v1/${path}@${process.env.KEY}`,
-					QueueUrl: 'https://sqs.us-east-1.amazonaws.com/919759177803/test'
+					QueueUrl: 'https://sqs.us-east-1.amazonaws.com/919759177803/scraper'
 				})
 				clientSQS.send(command)
 					.then(() => channel.send(`✅ sent a update request to ${path}`))
