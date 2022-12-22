@@ -152,7 +152,7 @@ client.on('messageCreate', async msg =>{
 	if (msg.content === '!pypi') {
     const res = await query('SELECT * FROM trending_pypi')
     const channel = client.channels.cache.get(process.env.PYTHON_ID)
-		console.log(res)
+		// console.log(res)
     const reducedArr = reduce(res, 20)
     for (let j = 0; j < 5; j++) {
       const data = []
@@ -191,7 +191,7 @@ client.on('messageCreate', async msg =>{
 				rating: game.rating,
 			})
 		}
-		console.log(asTable(data).length, 'this must be 2000 or fewer in length')
+		// console.log(asTable(data).length, 'this must be 2000 or fewer in length')
 		channel.send('```md\n  Top ' + data.length + ' Selling Games on Steam\n\n' + asTable(data) + '```')
 	}
 	if ((msg.content.includes('!update') && !msg.author.bot) || msg.content === '!monthly-update all') {
