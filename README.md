@@ -1,20 +1,7 @@
-## Lambda which scrapes for data that I like to look at
+## The code which does the web scraping has been moved to [here](https://github.com/CodaBool/AWS)
 
-sls invoke local --function api --path ./local-data.json
-Available Endpoints
+# 🤖Discord
 
-- /trending_github
-- /upcoming_movies
-- /trending_movies
-- /trending_tv
-- /upcoming_games
-- /trending_npm_1
-- /trending_npm_2
+> I would love to tell you I didn't break a TOS or two scraping this info but that would be a lie
 
----
-
-
-
----
-
-https://j8xl9nv9k9.execute-api.us-east-1.amazonaws.com/main/api/REPLACE_THIS_PATH
+![Commands](/commands.jpg?raw=true "Commands")
