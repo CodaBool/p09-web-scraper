@@ -185,13 +185,13 @@ client.on('messageCreate', async msg =>{
 				const percent = Math.floor(((game.discounted_price / game.regular_price) - 1) * -100 )
 				price = `${price} -> $${game.discounted_price.slice(0, -2)} (-${percent}% off)`
 			}
-			if (i < 18) data.push({
+			if (i < 16) data.push({
 				title: game.title,
 				price: price,
 				rating: game.rating,
 			})
 		}
-		// console.log(asTable(data).length, 'this must be 2000 or fewer in length')
+		console.log(asTable(data).length, 'this must be 2000 or fewer in length')
 		channel.send('```md\n  Top ' + data.length + ' Selling Games on Steam\n\n' + asTable(data) + '```')
 	}
 	if ((msg.content.includes('!update') && !msg.author.bot) || msg.content === '!monthly-update all') {
