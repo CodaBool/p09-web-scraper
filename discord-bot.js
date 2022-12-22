@@ -185,7 +185,7 @@ client.on('messageCreate', async msg =>{
 				const percent = Math.floor(((game.discounted_price / game.regular_price) - 1) * -100 )
 				price = `${price} -> $${game.discounted_price.slice(0, -2)} (-${percent}% off)`
 			}
-			data.push({
+			if (i < 18) data.push({
 				title: game.title,
 				price: price,
 				rating: game.rating,
