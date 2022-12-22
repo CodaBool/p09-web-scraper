@@ -144,7 +144,7 @@ client.on('messageCreate', async msg =>{
 			}
 			const split = reduce(data, 20)
 			split.forEach(half => {
-				// console.log('DEBUG: sending table with', asTable(half).length, 'length') // 2000
+				console.log('DEBUG: sending table with', asTable(half).length, 'length') // 2000
 				channel.send('```md\n' + subject[0].subject.toUpperCase() + ' packages scraped ' + new Date(subject[0]['updated_at']).toDateString() + '\n' + asTable(half) + '```')
 			})
 		}
