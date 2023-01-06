@@ -1,9 +1,9 @@
 require('dotenv').config()
 const Discord = require('discord.js')
 
-const client = new Discord.Client({
-  intents: ['GUILDS', 'GUILD_MESSAGES'],
-  partials: ['MESSAGE', 'CHANNEL']
+const client = new Discord.Client({ 
+  intents: [Discord.GatewayIntentBits.Guilds, Discord.GatewayIntentBits.GuildMessages], 
+  partials: [Discord.Partials.Message, Discord.Partials.Channel]
 })
 
 client.on('ready', async () => {
