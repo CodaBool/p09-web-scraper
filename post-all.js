@@ -10,7 +10,6 @@ client.on('ready', async () => {
   const channel = client.channels.cache.get(process.env.HACKER_ID)
   await channel.send('!github')
   await channel.send('!npm')
-  await channel.send('!github')
   await channel.send('!upcoming-movies')
   await channel.send('!trending-movies')
   await channel.send('!tv')
