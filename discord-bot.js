@@ -244,7 +244,7 @@ client.on('messageCreate', async msg =>{
 			let path = ''
 			
 			if (emote === '1⃣') {
-				['upcoming_movies', 'trending_movies', 'trending_tv', 'trending_games', 'trending_npm', 'trending_pypi', 'trending_github'].forEach(item => {
+				['upcoming_movies', 'trending_movies', 'tv', 'games', 'npm', 'pypi', 'github'].forEach(item => {
 					const command = new sqs.SendMessageCommand({
 						MessageBody: `/v1/${item}@${process.env.KEY}`,
 						QueueUrl: 'https://sqs.us-east-1.amazonaws.com/919759177803/scraper'
@@ -267,15 +267,15 @@ client.on('messageCreate', async msg =>{
 			} else if (emote === '3⃣') {
 				path = 'trending_movies'
 			} else if (emote === '4⃣') {
-				path = 'trending_tv'
+				path = 'tv'
 			} else if (emote === '5⃣') {
-				path = 'trending_games'
+				path = 'games'
 			} else if (emote === '6⃣') {
-				path = 'trending_npm'
+				path = 'npm'
 			} else if (emote === '7⃣') {
-				path = 'trending_pypi'
+				path = 'pypi'
 			} else if (emote === '8⃣') {
-				path = 'trending_github'
+				path = 'github'
 			} else if (emote === '9️⃣') {
 				const res = await query('SELECT updated_at FROM trending_pypi LIMIT 1')
 				channel.send(`Last database update happened at ${res[0].updated_at}`)
