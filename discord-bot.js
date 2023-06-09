@@ -4,16 +4,30 @@ const asTable = require('as-table')
 const pg = require('pg')
 const sqs = require('@aws-sdk/client-sqs')
 
-// codabool = 684265204007305244
-// xenophile = 311657807361343489
-// acid4ain = 423616944890052629
-// cowpace = 189075494312869888
+// const CODA_BOOL = '684265204007305244'
+// const COWPACE = '189075494312869888'
+// const XENOPHILE = '311657807361343489'
+// const ACID4AIN = '423616944890052629'
+// const API_URL = 'https://t960xe6yf8.execute-api.us-east-1.amazonaws.com/v1'
 
-const CODA_BOOL = '684265204007305244'
-const COWPACE = '189075494312869888'
-const XENOPHILE = '311657807361343489'
-const ACID4AIN = '423616944890052629'
-const API_URL = 'https://t960xe6yf8.execute-api.us-east-1.amazonaws.com/v1'
+let HACKER_CHANNEL = process.env.HACKER_CHANNEL
+let GITHUB_CHANNEL = process.env.GITHUB_CHANNEL
+let MOVIES_CHANNEL = process.env.MOVIES_CHANNEL
+let TV_CHANNEL = process.env.TV_CHANNEL
+let GAMES_CHANNEL = process.env.GAMES_CHANNEL
+let JAVASCRIPT_CHANNEL = process.env.JAVASCRIPT_CHANNEL
+let PYTHON_CHANNEL = process.env.PYTHON_CHANNEL
+
+if (process.env.DEBUG) {
+	console.log('using test discord server')
+	HACKER_CHANNEL = process.env.TEST_CHANNEL
+	GITHUB_CHANNEL = process.env.TEST_CHANNEL
+	MOVIES_CHANNEL = process.env.TEST_CHANNEL
+	TV_CHANNEL = process.env.TEST_CHANNEL
+	GAMES_CHANNEL = process.env.TEST_CHANNEL
+	JAVASCRIPT_CHANNEL = process.env.TEST_CHANNEL
+	PYTHON_CHANNEL = process.env.TEST_CHANNEL
+}
 
 const HOMIES = ['684265204007305244', '311657807361343489', '423616944890052629', '189075494312869888']
 
@@ -28,7 +42,7 @@ client.on('ready', async () => {
   // client.users.fetch(COWPACE, false).then(user => {
   //   user.send(`nice cock`)
   // })
-  // const lolkicks = client.guilds.cache.get(process.env.LOLKICK_ID)
+  // const lolkicks = client.guilds.cache.get(process.env.LOLKICK_CHANNEL)
   // const members = lolkicks.members.cache.filter(member => HOMIES.includes(member.user.id))
   // members.map(member => {
   //   const name = member.user.username
@@ -51,11 +65,11 @@ client.on('ready', async () => {
 
 client.on('messageCreate', async msg =>{
   if (msg.content === '!any-bots') {
-		client.channels.cache.get(process.env.HACKER_ID).send('yo')
+		client.channels.cache.get(HACKER_CHANNEL).send('yo')
 	}
 
   if (msg.content === '!help' || msg.content.includes('!h')) {
-		const channel = client.channels.cache.get(process.env.HACKER_ID)
+		const channel = client.channels.cache.get(HACKER_CHANNEL)
 
 		// new Discord.EmbedBuilder()
 		// 	.setColor('#204194')
@@ -96,7 +110,7 @@ client.on('messageCreate', async msg =>{
 	if (msg.content === '!github') {
 		//   const LANGUAGES = ["JavaScript", "Python", "Shell"]
     const res = await query('SELECT * FROM trending_github')
-    const githubChannel = client.channels.cache.get(process.env.GITHUB_ID)
+    const githubChannel = client.channels.cache.get(GITHUB_CHANNEL)
     const reducedArr = reduce(res, 20)
     for (let j = 0; j < 5; j++) {
       const data = []
@@ -118,7 +132,7 @@ client.on('messageCreate', async msg =>{
     // 	.setTitle('Github top 100 repos by stars')
     // 	.setDescription('```md\n'+ table.toString() +'```')
     // .setFooter('GITHUB')
-    // const channel = client.channels.cache.get(CHANNEL_ID)
+    // const channel = client.channels.cache.get(CHANNEL_CHANNEL)
     // channel.send(exampleEmbed)
 	}
 	if (msg.content === '!npm') {
@@ -130,7 +144,7 @@ client.on('messageCreate', async msg =>{
 		// 	'framework',
 		// ]
     const res = await query('SELECT * FROM trending_npm ORDER BY subject, rank')
-    const channel = client.channels.cache.get(process.env.NPM_ID)
+    const channel = client.channels.cache.get(JAVASCRIPT_CHANNEL)
 
     const reducedArr = reduce(res, 40)
 		for (const subject of reducedArr){
@@ -151,7 +165,7 @@ client.on('messageCreate', async msg =>{
 	}
 	if (msg.content === '!pypi') {
     const res = await query('SELECT * FROM trending_pypi')
-    const channel = client.channels.cache.get(process.env.PYTHON_ID)
+    const channel = client.channels.cache.get(PYTHON_CHANNEL)
 		// console.log(res)
     const reducedArr = reduce(res, 20)
     for (let j = 0; j < 5; j++) {
@@ -171,7 +185,7 @@ client.on('messageCreate', async msg =>{
 	}
 	if (msg.content === '!games') {
     const res = await query('SELECT * FROM trending_games LIMIT 18')
-    const channel = client.channels.cache.get(process.env.GAMES_ID)
+    const channel = client.channels.cache.get(GAMES_CHANNEL)
 
 		const data = []
 		for (const [i, game] of Object.entries(res)) {
@@ -195,7 +209,8 @@ client.on('messageCreate', async msg =>{
 		channel.send('```md\n  Top ' + data.length + ' Selling Games on Steam\n\n' + asTable(data) + '```')
 	}
 	if ((msg.content.includes('!update') && !msg.author.bot) || msg.content === '!monthly-update all') {
-		const channel = client.channels.cache.get(process.env.HACKER_ID)
+		console.log('post to hacker channel', HACKER_CHANNEL, 'should be 870190331554054194')
+		const channel = client.channels.cache.get(HACKER_CHANNEL)
 		const args = msg.content.split(' ').filter(item => item !== '!update') // remove initial !update
 		const promises = []
 		const clientSQS = new sqs.SQSClient({ region: "us-east-1" })
@@ -218,7 +233,7 @@ client.on('messageCreate', async msg =>{
 					}
 				}))
 				.finally(() => channel.send('🐶please allow up to 5 minutes for the database to be updated'))
-		} else {
+		} else if (false) {
 			let embed = new Discord.EmbedBuilder()
 				.setColor('#204194')
 				.setDescription('Select a reaction button corresponding to the item in the numbered list of database collections. This will send a request for new data to be scraped. The update command will only watch for reactions for 15 seconds and will add the 🛑 reaction to show that the command is no longer listening.')
@@ -295,7 +310,7 @@ client.on('messageCreate', async msg =>{
 	if (msg.content === '!upcoming-movies') {
     const res = await query('SELECT * FROM upcoming_movies LIMIT 25')
 		const updatedAt = new Date(res[0].updated_at).toDateString()
-		const channel = client.channels.cache.get(process.env.MOVIES_ID)
+		const channel = client.channels.cache.get(MOVIES_CHANNEL)
 		const parsedMovies = res.map(movie => ({...movie, release: (movie.release).toUTCString().slice(0, 11)}))
     const fields = []
 		const groupedByDate = groupBy(parsedMovies, 'release')
@@ -324,7 +339,7 @@ client.on('messageCreate', async msg =>{
 		const res = await query('SELECT * FROM trending_movies LIMIT 25')
 		const date = new Date(res[0].updated_at).toDateString()
 		const reducedArr = reduce(res, 25)
-		const channel = client.channels.cache.get(process.env.MOVIES_ID)
+		const channel = client.channels.cache.get(MOVIES_CHANNEL)
 		for (let j = 0; j < 1; j++) {
 			const fields = []
 			for (let i = 0; i < 25; i++) {
@@ -367,7 +382,7 @@ client.on('messageCreate', async msg =>{
 		const res = await query('SELECT * FROM trending_tv LIMIT 25')
 		const date = new Date(res[0].updated_at).toDateString()
 		const reducedArr = reduce(res, 25)
-		const channel = client.channels.cache.get(process.env.TV_ID)
+		const channel = client.channels.cache.get(TV_CHANNEL)
 		for (let j = 0; j < 1; j++) {
 			const fields = []
 			for (let i = 0; i < 25; i++) {

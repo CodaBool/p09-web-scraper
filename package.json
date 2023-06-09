@@ -4,8 +4,7 @@
   "description": "",
   "main": "handler.js",
   "scripts": {
-    "start": "echo 'This script should be ran with sls invoke local, read more in the README.md'",
-    "bot": "node discord-bot.js"
+    "start": "node discord-bot.js"
   },
   "keywords": [],
   "author": "",
