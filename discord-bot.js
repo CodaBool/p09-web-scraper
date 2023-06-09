@@ -209,7 +209,6 @@ client.on('messageCreate', async msg =>{
 		channel.send('```md\n  Top ' + data.length + ' Selling Games on Steam\n\n' + asTable(data) + '```')
 	}
 	if ((msg.content.includes('!update') && !msg.author.bot) || msg.content === '!monthly-update all') {
-		console.log('post to hacker channel', HACKER_CHANNEL, 'should be 870190331554054194')
 		const channel = client.channels.cache.get(HACKER_CHANNEL)
 		const args = msg.content.split(' ').filter(item => item !== '!update') // remove initial !update
 		const promises = []
@@ -233,7 +232,7 @@ client.on('messageCreate', async msg =>{
 					}
 				}))
 				.finally(() => channel.send('🐶please allow up to 5 minutes for the database to be updated'))
-		} else if (false) {
+		} else {
 			let embed = new Discord.EmbedBuilder()
 				.setColor('#204194')
 				.setDescription('Select a reaction button corresponding to the item in the numbered list of database collections. This will send a request for new data to be scraped. The update command will only watch for reactions for 15 seconds and will add the 🛑 reaction to show that the command is no longer listening.')
